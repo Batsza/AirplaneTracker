@@ -30,6 +30,8 @@ const requestLocationPermission = async () => {
 
 function InfoScreean({ navigation }) {
   const [location, setLocation] = useState(null);
+  const [SPLongitude, setSPLongitude] = useState(null);
+  const [SPLatitude, setSPLatitude] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
 
   useEffect(() => {
@@ -42,6 +44,8 @@ function InfoScreean({ navigation }) {
 
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
+      setSPLongitude(location.coords.longitude);
+      setSPLatitude(location.coords.latitude);
     })();
   }, []);
 
@@ -50,8 +54,34 @@ function InfoScreean({ navigation }) {
     text = errorMsg;
   } else if (location) {
     console.log("XD")
-    text = JSON.stringify(location);
+    console.log(SPLongitude)
+
+    text = JSON.stringify("szerokosc " + SPLongitude + " dlugosć " + SPLatitude);
+
   }
+  const [data, setData] = useState([]);
+  const [isLoading, setLoading] = useState(true);
+
+  const getMovies = async () => {
+    try {
+      const response = await fetch('http://api.aviationstack.com/v1/flights?access_key=b55117a19845ef9d484b97d6d4f13eba&limit=1');
+      const planes = await response.json();
+      setData(planes);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    //getMovies();
+    console.log(data)
+  }, []);
+
+
+
+
   return (
 
       <ImageBackground 
