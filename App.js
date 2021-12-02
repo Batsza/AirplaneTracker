@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import WelcomeScreen from './app/WelcomeScreen';
 import InfoSreen from './app/InfoScreean';
+import Camera from './app/CameraScrean';
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -14,7 +15,9 @@ return (
         component={WelcomeScreen}
         options={{ title: 'Welcome' }}
       />
-      <Stack.Screen name="Profile" component={InfoSreen} />
+      <Stack.Screen name="info" component={InfoSreen} />
+      <Stack.Screen name="Camera" component={Camera} />
+
     </Stack.Navigator>
   </NavigationContainer>
 );

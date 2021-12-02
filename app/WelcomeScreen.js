@@ -16,7 +16,7 @@ function WelcomeScreen({ navigation }) {
           title="Learn XD More"
           color="#0008fa"
           onPress={() =>
-            navigation.push('Profile')
+            navigation.push('info')
             
           }
         /></View>
