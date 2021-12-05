@@ -56,10 +56,10 @@ function InfoScreean({ navigation }) {
     setSubscription(null);
   };
 
-  useEffect(() => {
+ /* useEffect(() => {
     _subscribe();
     return () => _unsubscribe();
-  }, []);
+  }, []);*/
 
   const { x, y, z } = data2;
   useEffect(() => {
@@ -81,37 +81,46 @@ function InfoScreean({ navigation }) {
   if (errorMsg) {
     text = errorMsg;
   } else if (location) {
-    console.log("XD")
-    console.log(SPLongitude)
+   // console.log("XD")
+  //  console.log(SPLongitude)
 
     text = JSON.stringify("szerokosc " + SPLongitude + " dlugosć " + SPLatitude);
-
+ 
   }
-  const [data, setData] = useState([]);
+  const [planeData, setplaneData] = useState([]);
   const [isLoading, setLoading] = useState(true);
 
   const getMovies = async () => {
-    try {
-      const response = await fetch('http://api.aviationstack.com/v1/flights?access_key=b55117a19845ef9d484b97d6d4f13eba&limit=1');
+      const response = await fetch('https://opensky-network.org/api/states/all?lamin=50.1107&lomin=19.4215&lamax=51.2032&lomax=21.52108');
       const planes = await response.json();
-      setData(planes);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+      setplaneData(planes);
+      console.log(planeData)
+  }
+  let pr = SPLongitude + 1;
+    
+  useEffect(() => {
+       // setInterval(() => getMovies(), (1000))
+
+    getMovies();
+    //console.log(planeData)
+  }, []);
+  let flightnumber = 'Waiting..';
+  let planeLatitude = 'Waiting..';
+  let planeLongitude = 'Waiting..';
+  if(Object.keys(planeData).length == 0){
+        console.log("pusto")
+  }
+  else{
+    if(planeData.states.length>0){
+      flightnumber = JSON.stringify("numer lotu " + planeData.states[0][1]);
+      planeLatitude = JSON.stringify("szerkość  " + planeData.states[0][6]);
+      planeLongitude = JSON.stringify("długość " + planeData.states[0][5]);
+      }
+
   }
 
-  useEffect(() => {
-    //getMovies();
-    console.log(data)
-  }, []);
-
-
-
-
   return (
-
+    
       <ImageBackground 
         style={styles.background}
         source={require("../assets/ekran2.jpg")}
@@ -127,6 +136,11 @@ function InfoScreean({ navigation }) {
         ]}
         renderItem={({item}) => <Text style={styles.item}>{item.key}</Text>}
       /> </Text>
+        <Text>{flightnumber}</Text>
+        <Text>{planeLatitude}</Text>
+        <Text>{planeLongitude}</Text>
+        <Text>{pr}</Text>
+
         </View>
         <View style={styles.planeViewB}> 
         <Text>{text}</Text>
@@ -134,6 +148,7 @@ function InfoScreean({ navigation }) {
       <Text >
         x: {x} y: {y} z: {z}
       </Text>
+ 
         </View>
         <View style={styles.startButton}>
         <Button
@@ -191,7 +206,7 @@ const styles = StyleSheet.create({
   },
   planeViewA:{
     width: '100%',
-    height: '10%',
+    height: '20%',
     backgroundColor: "red",
 
   },
