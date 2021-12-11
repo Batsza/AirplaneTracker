@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, ImageBackground,  StyleSheet, View, Text, PermissionsAndroid, FlatList} from 'react-native';
+import { Button, ImageBackground,  StyleSheet, View, Text, PermissionsAndroid, FlatList, RefreshControl, SafeAreaView, ScrollView,} from 'react-native';
 import * as Location from 'expo-location';
 import Icon from 'react-native-vector-icons/Feather';
 import { Gyroscope } from 'expo-sensors';
@@ -110,6 +110,9 @@ function InfoScreean({ navigation }) {
   if(Object.keys(planeData).length == 0){
         console.log("pusto")
   }
+  else if(planeData.states===null){
+    console.log("pusto2")
+  }
   else{
     if(planeData.states.length>0){
       flightnumber = JSON.stringify("numer lotu " + planeData.states[0][1]);
@@ -119,23 +122,44 @@ function InfoScreean({ navigation }) {
 
   }
 
+  const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  }
+  
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    getMovies();
+    wait(2000).then(() => setRefreshing(false));
+  }, []);
+
+
   return (
-    
+       
       <ImageBackground 
         style={styles.background}
         source={require("../assets/ekran2.jpg")}
       >
         <View style={styles.Title}><Text style={styles.TitleText}>Wybierz samolot</Text></View>
         <View style={styles.startWidok}> 
-        <View style={styles.planeViewA}>
-        <Text>        <FlatList
-        data={[
-          {key: 'jeden'},
-          {key: 'Dwa'},
+        <ScrollView style={styles.scrollView} 
+       refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+        />
+      }>
+       
+          {planeData.states==null? (<View style={styles.planeViewC}><Text>brak</Text></View>):
+          (planeData.states.map((item)=>{
+              return(
+            <View style={styles.planeViewC} key={item.key}><Text >{item[1]}</Text></View>
+                  )
+              }
+          ))}
+          <View style={styles.planeViewA}>
 
-        ]}
-        renderItem={({item}) => <Text style={styles.item}>{item.key}</Text>}
-      /> </Text>
         <Text>{flightnumber}</Text>
         <Text>{planeLatitude}</Text>
         <Text>{planeLongitude}</Text>
@@ -150,7 +174,24 @@ function InfoScreean({ navigation }) {
       </Text>
  
         </View>
-        <View style={styles.startButton}>
+        <View style={styles.planeViewB}> 
+        <Text>
+        <Icon name="arrow-down-left" size={60} color="#00ff04" />
+        <Icon name="arrow-down-right" size={30} color="#00ff04" />
+        <Icon name="arrow-up-left" size={30} color="#00ff04" />
+        <Icon name="arrow-up-right" size={30} color="#00ff04" />
+        <Icon name="arrow-down" size={30} color="#00ff04" />
+        <Icon name="arrow-right" size={30} color="#00ff04" />
+        <Icon name="arrow-left" size={30} color="#00ff04" />
+        <Icon name="arrow-up" size={30} color="#00ff04" />
+        <Icon name="target" size={30} color="red" />
+        </Text>
+        <Text>{text}</Text>
+        <Text >Gyroscope:</Text>
+      <Text >
+        x: {x} y: {y} z: {z}
+      </Text>
+      <View style={styles.startButton}>
         <Button
           title="Learn XD2 More"
           color="#0008fa"
@@ -165,20 +206,14 @@ function InfoScreean({ navigation }) {
             
           }
         /></View>
-        <Text>
-        <Icon name="arrow-down-left" size={60} color="#00ff04" />
-        <Icon name="arrow-down-right" size={30} color="#00ff04" />
-        <Icon name="arrow-up-left" size={30} color="#00ff04" />
-        <Icon name="arrow-up-right" size={30} color="#00ff04" />
-        <Icon name="arrow-down" size={30} color="#00ff04" />
-        <Icon name="arrow-right" size={30} color="#00ff04" />
-        <Icon name="arrow-left" size={30} color="#00ff04" />
-        <Icon name="arrow-up" size={30} color="#00ff04" />
-        <Icon name="target" size={30} color="red" />
-        </Text>
         </View>
+    
+      
+        </ScrollView>
+        </View>     
+        
       </ImageBackground>
-
+      
   );
 }
 const styles = StyleSheet.create({
@@ -198,26 +233,47 @@ const styles = StyleSheet.create({
     color: "#00ed1c" ,
     fontFamily: "serif",
   },
+  item:{
+    marginTop: 24,
+    padding: 30,
+    backgroundColor: 'pink',
+    fontSize: 24,
+  },
 
-  startWidok:{
-    width: '100%',
-    height: '100%',
-    alignItems: 'flex-start',
+  scrollView: {
+  },
+  text: {
+    fontSize: 42,
   },
   planeViewA:{
     width: '100%',
-    height: '20%',
     backgroundColor: "red",
 
   },
+  startWidok:{
+    width: '100%',
+    height: '100%',
+    flex: 1,
+    flexGrow: 1,
+  },
   planeViewB:{
     width: '100%',
-    height: '10%',
     backgroundColor: "green",
   },
   startButton:{
     width: "90%",
     margin: 10,
+  },
+  planeViewC:{
+    width: '100%',
+    height: 100,
+    backgroundColor: "#808080",
+    borderTopColor: "black",
+    borderBottomColor: "white",
+    borderRadius: 5,
+    borderWidth: 2,
+    
+
   },
 
 })

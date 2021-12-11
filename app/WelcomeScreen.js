@@ -19,6 +19,14 @@ function WelcomeScreen({ navigation }) {
             navigation.push('info')
             
           }
+        />
+         <Button
+          title="test"
+          color="#0008fa"
+          onPress={() =>
+            navigation.push('Test')
+            
+          }
         /></View>
         </View>
       </ImageBackground>

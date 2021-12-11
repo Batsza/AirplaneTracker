@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import WelcomeScreen from './app/WelcomeScreen';
 import InfoSreen from './app/InfoScreean';
 import Camera from './app/CameraScrean';
+import TestComponent from './app/TestComponent';
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -17,6 +18,8 @@ return (
       />
       <Stack.Screen name="info" component={InfoSreen} />
       <Stack.Screen name="Camera" component={Camera} />
+      <Stack.Screen name="Test" component={TestComponent} />
+
 
     </Stack.Navigator>
   </NavigationContainer>
