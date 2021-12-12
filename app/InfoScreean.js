@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, ImageBackground,  StyleSheet, View, Text, PermissionsAndroid, FlatList, RefreshControl, SafeAreaView, ScrollView,} from 'react-native';
+import { Button, ImageBackground,  StyleSheet, View, Text, PermissionsAndroid, FlatList, RefreshControl, SafeAreaView, ScrollView,TouchableOpacity} from 'react-native';
 import * as Location from 'expo-location';
 import Icon from 'react-native-vector-icons/Feather';
 import { Gyroscope } from 'expo-sensors';
@@ -136,83 +136,84 @@ function InfoScreean({ navigation }) {
 
 
   return (
-       
-      <ImageBackground 
-        style={styles.background}
-        source={require("../assets/ekran2.jpg")}
-      >
-        <View style={styles.Title}><Text style={styles.TitleText}>Wybierz samolot</Text></View>
-        <View style={styles.startWidok}> 
+      
+    <ImageBackground 
+      style={styles.background}
+      source={require("../assets/ekran2.jpg")}
+    >
+      <View style={styles.Title}><Text style={styles.TitleText}>Wybierz samolot</Text></View>
+      <View style={styles.startWidok}> 
         <ScrollView style={styles.scrollView} 
-       refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-        />
-      }>
-       
+          refreshControl={
+            <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            />
+        }>
           {planeData.states==null? (<View style={styles.planeViewC}><Text>brak</Text></View>):
           (planeData.states.map((item)=>{
               return(
-            <View style={styles.planeViewC} key={item.key}><Text >{item[1]}</Text></View>
+                <TouchableOpacity
+                    onPress={() =>navigation.push('Camera')}
+                >
+                  <View style={styles.planeViewC} key={item.key}><Text >{item[1]}</Text></View>
+                </TouchableOpacity>
                   )
               }
           ))}
           <View style={styles.planeViewA}>
+            <Text>{flightnumber}</Text>
+            <Text>{planeLatitude}</Text>
+            <Text>{planeLongitude}</Text>
+            <Text>{pr}</Text>
 
-        <Text>{flightnumber}</Text>
-        <Text>{planeLatitude}</Text>
-        <Text>{planeLongitude}</Text>
-        <Text>{pr}</Text>
-
-        </View>
-        <View style={styles.planeViewB}> 
-        <Text>{text}</Text>
-        <Text >Gyroscope:</Text>
-      <Text >
-        x: {x} y: {y} z: {z}
-      </Text>
- 
-        </View>
-        <View style={styles.planeViewB}> 
-        <Text>
-        <Icon name="arrow-down-left" size={60} color="#00ff04" />
-        <Icon name="arrow-down-right" size={30} color="#00ff04" />
-        <Icon name="arrow-up-left" size={30} color="#00ff04" />
-        <Icon name="arrow-up-right" size={30} color="#00ff04" />
-        <Icon name="arrow-down" size={30} color="#00ff04" />
-        <Icon name="arrow-right" size={30} color="#00ff04" />
-        <Icon name="arrow-left" size={30} color="#00ff04" />
-        <Icon name="arrow-up" size={30} color="#00ff04" />
-        <Icon name="target" size={30} color="red" />
-        </Text>
-        <Text>{text}</Text>
-        <Text >Gyroscope:</Text>
-      <Text >
-        x: {x} y: {y} z: {z}
-      </Text>
-      <View style={styles.startButton}>
-        <Button
-          title="Learn XD2 More"
-          color="#0008fa"
-          onPress={requestLocationPermission} 
-          
-        />
-        <Button
-          title="Do kamery"
-          color="#0008fa"
-          onPress={() =>
-            navigation.push('Camera')
-            
-          }
-        /></View>
-        </View>
-    
-      
+          </View>
+          <View style={styles.planeViewB}> 
+            <Text>{text}</Text>
+            <Text >Gyroscope:</Text>
+              <Text >
+                x: {x} y: {y} z: {z}
+              </Text>
+            </View>
+              <View style={styles.planeViewB}> 
+                <Text>
+                  <Icon name="arrow-down-left" size={60} color="#00ff04" />
+                  <Icon name="arrow-down-right" size={30} color="#00ff04" />
+                  <Icon name="arrow-up-left" size={30} color="#00ff04" />
+                  <Icon name="arrow-up-right" size={30} color="#00ff04" />
+                  <Icon name="arrow-down" size={30} color="#00ff04" />
+                  <Icon name="arrow-right" size={30} color="#00ff04" />
+                  <Icon name="arrow-left" size={30} color="#00ff04" />
+                  <Icon name="arrow-up" size={30} color="#00ff04" />
+                  <Icon name="target" size={30} color="red" />
+                </Text>
+                <Text>{text}</Text>
+                <Text >Gyroscope:</Text>
+                <Text >
+                  x: {x} y: {y} z: {z}
+                </Text>
+                <View style={styles.startButton}>
+                  <Button
+                    title="Learn XD2 More"
+                    color="#0008fa"
+                    onPress={requestLocationPermission} 
+                  />
+                  <Button
+                    title="odświerz"
+                    color="#0008fa"
+                    onPress={onRefresh} 
+                  />
+                  <Button
+                    title="Do kamery"
+                    color="#0008fa"
+                    onPress={() =>navigation.push('Camera')}
+                  />
+                </View>
+              </View>
         </ScrollView>
-        </View>     
+      </View>     
         
-      </ImageBackground>
+    </ImageBackground>
       
   );
 }
