@@ -3,6 +3,7 @@ import { Button, ImageBackground,  StyleSheet, View, Text, PermissionsAndroid, F
 import * as Location from 'expo-location';
 import Icon from 'react-native-vector-icons/Feather';
 import { Gyroscope } from 'expo-sensors';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const requestLocationPermission = async () => {
   try {
@@ -34,6 +35,8 @@ function InfoScreean({ navigation }) {
   const [SPLongitude, setSPLongitude] = useState(null);
   const [SPLatitude, setSPLatitude] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [compass, setCompass] = useState(null);
+
   const [data2, setData2] = useState({
     x: 0,
     y: 0,
@@ -67,6 +70,7 @@ function InfoScreean({ navigation }) {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
+        console.log("zlexd");
         return;
       }
 
@@ -74,8 +78,10 @@ function InfoScreean({ navigation }) {
       setLocation(location);
       setSPLongitude(location.coords.longitude);
       setSPLatitude(location.coords.latitude);
+
     })();
   }, []);
+
 
   let text = 'Waiting..';
   if (errorMsg) {
@@ -90,7 +96,7 @@ function InfoScreean({ navigation }) {
   const [planeData, setplaneData] = useState([]);
   const [isLoading, setLoading] = useState(true);
 
-  const getMovies = async () => {
+  const getFlight = async () => {
       const response = await fetch('https://opensky-network.org/api/states/all?lamin=50.1107&lomin=19.4215&lamax=51.2032&lomax=21.52108');
       const planes = await response.json();
       setplaneData(planes);
@@ -99,9 +105,9 @@ function InfoScreean({ navigation }) {
   let pr = SPLongitude + 1;
     
   useEffect(() => {
-       // setInterval(() => getMovies(), (1000))
+       // setInterval(() => getFlight(), (1000))
 
-    getMovies();
+      getFlight();
     //console.log(planeData)
   }, []);
   let flightnumber = 'Waiting..';
@@ -130,16 +136,24 @@ function InfoScreean({ navigation }) {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    getMovies();
+    getFlight();
     wait(2000).then(() => setRefreshing(false));
   }, []);
-
+  
+  const getCompassData = async () =>{
+    let kompas = await Location.getHeadingAsync();
+    setCompass(kompas.trueHeading);
+    console.log(" kompas" + compass);
+}
+useEffect(() => {
+//setInterval(() => getCompassData(), (1000));
+getCompassData();
+}, []);
 
   return (
       
-    <ImageBackground 
+    <View 
       style={styles.background}
-      source={require("../assets/ekran2.jpg")}
     >
       <View style={styles.Title}><Text style={styles.TitleText}>Wybierz samolot</Text></View>
       <View style={styles.startWidok}> 
@@ -150,13 +164,20 @@ function InfoScreean({ navigation }) {
             onRefresh={onRefresh}
             />
         }>
-          {planeData.states==null? (<View style={styles.planeViewC}><Text>brak</Text></View>):
+          {planeData.states==null? ( <LinearGradient colors={['#ffc455', '#e08b00']}style={styles.planeViewC}><View style={styles.planeViewC}
+          ><Text style={styles.InViewText}>Nie ma samolotów w zasięgu</Text></View></LinearGradient>):
           (planeData.states.map((item)=>{
               return(
                 <TouchableOpacity
-                    onPress={() =>navigation.push('Camera')}
+                    onPress={() =>navigation.push('Namierz samolot')}
                 >
-                  <View style={styles.planeViewC} key={item.key}><Text >{item[1]}</Text></View>
+                          <LinearGradient
+        // Background Linear Gradient
+        colors={['#ffc455', '#e08b00']}
+        style={styles.planeViewC}
+        >
+                <View  key={item.key}><Text style={styles.InViewText} >Numer lotu:  {item[1]}</Text><Text style={styles.InText}>Kraj lini lotniczych: {item[2]} </Text></View>
+                  </LinearGradient>
                 </TouchableOpacity>
                   )
               }
@@ -167,13 +188,15 @@ function InfoScreean({ navigation }) {
             <Text>{planeLongitude}</Text>
             <Text>{pr}</Text>
 
-          </View>
+            </View>
           <View style={styles.planeViewB}> 
             <Text>{text}</Text>
             <Text >Gyroscope:</Text>
               <Text >
                 x: {x} y: {y} z: {z}
               </Text>
+              <Text >Kompas:</Text>
+              <Text >{compass}</Text>
             </View>
               <View style={styles.planeViewB}> 
                 <Text>
@@ -186,40 +209,29 @@ function InfoScreean({ navigation }) {
                   <Icon name="arrow-left" size={30} color="#00ff04" />
                   <Icon name="arrow-up" size={30} color="#00ff04" />
                   <Icon name="target" size={30} color="red" />
-                </Text>
-                <Text>{text}</Text>
-                <Text >Gyroscope:</Text>
-                <Text >
-                  x: {x} y: {y} z: {z}
-                </Text>
-                <View style={styles.startButton}>
-                  <Button
-                    title="Learn XD2 More"
-                    color="#0008fa"
-                    onPress={requestLocationPermission} 
-                  />
+            </Text>
+          </View>
+        <View style={styles.startButton}>
+                  
                   <Button
                     title="odświerz"
-                    color="#0008fa"
+                    color="#00750a"
                     onPress={onRefresh} 
                   />
-                  <Button
-                    title="Do kamery"
-                    color="#0008fa"
-                    onPress={() =>navigation.push('Camera')}
-                  />
-                </View>
-              </View>
+        
+          </View>
         </ScrollView>
       </View>     
         
-    </ImageBackground>
+    </View>
       
   );
 }
 const styles = StyleSheet.create({
   background:{
-    flex:1
+    flex:1,
+    backgroundColor: '#477fff' ,
+
   },
   Title:{
     width: '100%',
@@ -227,12 +239,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     fontSize: 20,
     textAlign: 'center',
+    paddingBottom: 15,
   },
   TitleText:{
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: "bold",
-    color: "#00ed1c" ,
+    color: "#ffa200" ,
     fontFamily: "serif",
+  },
+  InViewText:{
+    textAlign: 'center',
+    fontWeight: "bold",
+    fontSize: 20,
+  },
+  InText:{
+    textAlign: 'center',
+    fontSize: 15,
+    margin: 10,
   },
   item:{
     marginTop: 24,
@@ -266,13 +289,13 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   planeViewC:{
-    width: '100%',
+    width: '97%',
     height: 100,
-    backgroundColor: "#808080",
+    //backgroundColor: "#808080",
     borderTopColor: "black",
     borderBottomColor: "white",
     borderRadius: 5,
-    borderWidth: 2,
+    margin: 5,
     
 
   },

@@ -3,35 +3,7 @@ import { Camera } from 'expo-camera';
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  camera: {
-    flex: 1,
-  },
-  buttonContainer: {
-    flex: 1,
-    backgroundColor: 'transparent',
-    flexDirection: 'row',
-    margin: 20,
 
-
-
-  },
-  button: {
-    flex: 0.1,
-    alignSelf: 'flex-end',
-    alignItems: 'center',
-
-  },
-  text: {
-    fontSize: 18,
-    color: 'white',   
-    alignSelf: 'flex-end',
-    alignItems: 'center',
-  },
-});
 
 function CameraScrean(props) {
   const [hasPermission, setHasPermission] = useState(null);
@@ -66,7 +38,7 @@ function CameraScrean(props) {
       
         </TouchableOpacity>
         <Text style={styles.text}> 
-            <Icon name="arrow-down-left" size={100} color="#00ff04" />
+            <Icon name="arrow-up-left" size={300} color="#00ff04" />
           </Text>
       </View>
     </Camera>
@@ -74,5 +46,34 @@ function CameraScrean(props) {
   );
 }
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  camera: {
+    flex: 1,
+  },
+  buttonContainer: {
+    flex: 1,
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
+    margin: 20,
 
+
+
+  },
+  button: {
+    flex: 0.1,
+    alignSelf: 'flex-end',
+    alignItems: 'center',
+
+  },
+  text: {
+    marginLeft: 20,
+    color: 'white',   
+    alignSelf: 'flex-end',
+    alignItems: 'center',
+    textAlign: 'center',
+  },
+})
 export default CameraScrean;

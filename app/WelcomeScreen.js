@@ -1,15 +1,20 @@
 import React from 'react';
 import { Button, ImageBackground,  StyleSheet, View, PermissionsAndroid, Text  } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 
 
 function WelcomeScreen({ navigation }) {
   return (
 
-      <ImageBackground 
-        style={styles.background}
-        source={require("../assets/samolot.jpg")}
+      <View 
       >
+            <LinearGradient
+        // Background Linear Gradient
+        colors={['#477fff', '#00b0fe', '#82d6ff']}
+        style={styles.background}
+
+      />
         <View style={styles.Title}><Text style={styles.TitleText}>Witaj w aplikcji do odnajdywania samolotów na niebie</Text></View>
         <View style={styles.startWidok}> 
         <Text style={styles.NormalText}>Aby znaleźć samolot na niebie przejdz do następnego ekranu i wybierz numer lotu, który chcesz odnaleźć.  </Text>
@@ -18,28 +23,26 @@ function WelcomeScreen({ navigation }) {
         <View style={styles.startButton}>
         <Button
           title="Wybór samolotu"
-          color="#0008fa"
+          color="#00750a"
           onPress={() =>
-            navigation.push('info')
+            navigation.push('Informacje')
             
           }
         />
-         <Button
-          title="test"
-          color="#0008fa"
-          onPress={() =>
-            navigation.push('Test')
-            
-          }
-        /></View>
+     </View>
         </View>
-      </ImageBackground>
+      </View>
 
   );
 }
 const styles = StyleSheet.create({
   background:{
-    flex:1
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    height: "100%",
+
   },
   startWidok:{
     width: '100%',

@@ -14,10 +14,10 @@ return (
       <Stack.Screen
         name="Home"
         component={WelcomeScreen}
-        options={{ title: 'Welcome' }}
+        options={{ title: 'Plane Tracker' }}
       />
-      <Stack.Screen name="info" component={InfoSreen} />
-      <Stack.Screen name="Camera" component={Camera} />
+      <Stack.Screen name="Informacje" component={InfoSreen} />
+      <Stack.Screen name="Namierz samolot" component={Camera} />
       <Stack.Screen name="Test" component={TestComponent} />
 
 
