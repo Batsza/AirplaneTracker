@@ -36,6 +36,14 @@ function InfoScreean({ navigation }) {
   const [SPLatitude, setSPLatitude] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [compass, setCompass] = useState(null);
+  const [SPLongitudeW1, setSPLongitudeW1] = useState(null);
+  const [SPLongitudeM1, setSPLongitudeM1] = useState(null);
+  const [SPLatitudeW1, setSPLatitudeW1] = useState(null);
+  const [SPLatitudeM1, setSPLatitudeM1] = useState(null);
+  const [planeData, setplaneData] = useState([]);
+
+
+
 
   const [data2, setData2] = useState({
     x: 0,
@@ -78,31 +86,33 @@ function InfoScreean({ navigation }) {
       setLocation(location);
       setSPLongitude(location.coords.longitude);
       setSPLatitude(location.coords.latitude);
-
+      setSPLongitudeM1(location.coords.longitude-1);
+      setSPLongitudeW1(location.coords.longitude+1);
+      setSPLatitudeW1(location.coords.latitude+1);
+      setSPLatitudeM1(location.coords.latitude-1);
     })();
   }, []);
-
+  const getFlight = async () => {
+    
+    console.log("biore dane");
+    //const response = await fetch('https://opensky-network.org/api/states/all?lamin=50.1107&lomin=19.4215&lamax=51.2032&lomax=21.52108');
+    const response = await fetch('https://opensky-network.org/api/states/all?lamin='+SPLatitudeM1+'&lomin='+SPLongitudeM1+'&lamax='+SPLatitudeW1+'&lomax='+SPLongitudeW1);
+    const planes = await response.json();
+    setplaneData(planes);
+}
 
   let text = 'Waiting..';
   if (errorMsg) {
     text = errorMsg;
   } else if (location) {
-   // console.log("XD")
-  //  console.log(SPLongitude)
-
     text = JSON.stringify("szerokosc " + SPLongitude + " dlugosć " + SPLatitude);
- 
+    getFlight();
   }
-  const [planeData, setplaneData] = useState([]);
-  const [isLoading, setLoading] = useState(true);
 
-  const getFlight = async () => {
-      const response = await fetch('https://opensky-network.org/api/states/all?lamin=50.1107&lomin=19.4215&lamax=51.2032&lomax=21.52108');
-      const planes = await response.json();
-      setplaneData(planes);
-      console.log(planeData)
-  }
-  let pr = SPLongitude + 1;
+
+
+
+
     
   useEffect(() => {
        // setInterval(() => getFlight(), (1000))
@@ -110,24 +120,7 @@ function InfoScreean({ navigation }) {
       getFlight();
     //console.log(planeData)
   }, []);
-  let flightnumber = 'Waiting..';
-  let planeLatitude = 'Waiting..';
-  let planeLongitude = 'Waiting..';
-  if(Object.keys(planeData).length == 0){
-        console.log("pusto")
-  }
-  else if(planeData.states===null){
-    console.log("pusto2")
-  }
-  else{
-    if(planeData.states.length>0){
-      flightnumber = JSON.stringify("numer lotu " + planeData.states[0][1]);
-      planeLatitude = JSON.stringify("szerkość  " + planeData.states[0][6]);
-      planeLongitude = JSON.stringify("długość " + planeData.states[0][5]);
-      }
-
-  }
-
+ 
   const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
   }
@@ -182,13 +175,16 @@ getCompassData();
                   )
               }
           ))}
-          {/*<View style={styles.planeViewA}>
-            <Text>{flightnumber}</Text>
-            <Text>{planeLatitude}</Text>
-            <Text>{planeLongitude}</Text>
-            <Text>{pr}</Text>
+          <View style={styles.planeViewA}>
 
-            </View>
+            <Text>{SPLatitudeW1}</Text>
+            <Text>{SPLatitudeM1}</Text>
+            <Text>{SPLatitude}</Text>
+            <Text>{SPLongitude}</Text>
+            <Text>{SPLongitudeW1}</Text>
+            <Text>{SPLongitudeM1}</Text>
+
+            </View>{/*
           <View style={styles.planeViewB}> 
             <Text>{text}</Text>
             <Text >Gyroscope:</Text>
@@ -210,7 +206,7 @@ getCompassData();
                   <Icon name="arrow-up" size={30} color="#00ff04" />
                   <Icon name="target" size={30} color="red" />
             </Text>
-          </View>*/}
+            </View>*/}
     
         </ScrollView>
       </View>     
