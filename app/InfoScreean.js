@@ -182,7 +182,7 @@ getCompassData();
                   )
               }
           ))}
-          <View style={styles.planeViewA}>
+          {/*<View style={styles.planeViewA}>
             <Text>{flightnumber}</Text>
             <Text>{planeLatitude}</Text>
             <Text>{planeLongitude}</Text>
@@ -210,16 +210,8 @@ getCompassData();
                   <Icon name="arrow-up" size={30} color="#00ff04" />
                   <Icon name="target" size={30} color="red" />
             </Text>
-          </View>
-        <View style={styles.startButton}>
-                  
-                  <Button
-                    title="odświerz"
-                    color="#00750a"
-                    onPress={onRefresh} 
-                  />
-        
-          </View>
+          </View>*/}
+    
         </ScrollView>
       </View>     
         
@@ -230,7 +222,7 @@ getCompassData();
 const styles = StyleSheet.create({
   background:{
     flex:1,
-    backgroundColor: '#477fff' ,
+    backgroundColor: '#008ac7' ,
 
   },
   Title:{
