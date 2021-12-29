@@ -1,10 +1,57 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, ImageBackground,  StyleSheet, View, PermissionsAndroid, Text, TouchableOpacity  } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as Location from 'expo-location';
 
 
 
-function WelcomeScreen({ navigation }) {
+const requestLocationPermission = async () => {
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      {
+        title: "your location",
+        message:
+          "Potrzeba towjej lokalizacji" +
+          "bo ja chce.",
+        buttonNeutral: "Ask Me Later",
+        buttonNegative: "Cancel",
+        buttonPositive: "OK"
+      }
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log("You can use the camera");
+    } else {
+      console.log("Camera permission denied");
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+
+};
+
+function WelcomeScreen({ route, navigation }) {
+  const [location, setLocation] = useState(null);
+  const [SPLongitude, setSPLongitude] = useState(null);
+  const [SPLatitude, setSPLatitude] = useState(null);
+  
+  useEffect(() => {
+    (async () => {
+
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        console.log("zlexd");
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+      setSPLongitude(location.coords.longitude);
+      setSPLatitude(location.coords.latitude);
+    })();
+  }, []);
+  
   return (
 
       <View 
@@ -20,11 +67,11 @@ function WelcomeScreen({ navigation }) {
         <Text style={styles.NormalText}>{"\n"}Aby znaleźć samolot na niebie:   </Text>
         <Text style={styles.NormalText}>{"\n"}1. przejdz do następnego ekranu i wybierz numer lotu, który chcesz odnaleźć</Text>
         <Text style={styles.NormalText}>{"\n"}2. kieruj telefonem zgodnie ze sztrzłkami wyświetlanymi na ekranie{"\n"} </Text>
-
+        {SPLatitude!=null?(
         <TouchableOpacity
-        onPress={() => navigation.push('Informacje')}
+        onPress={() => navigation.navigate('Informacje', {SPLo: SPLongitude, SPLa: SPLatitude})}
         >
-                                  <LinearGradient
+        <LinearGradient
         // Background Linear Gradient
         colors={['#ffc455', '#e08b00']}
         style={styles.planeViewC}
@@ -33,7 +80,20 @@ function WelcomeScreen({ navigation }) {
         <Text style={styles.ButtonText}>Wybór samolotu </Text>
         </View>
         </LinearGradient>
-        </TouchableOpacity>
+        </TouchableOpacity>):(   <TouchableOpacity 
+        disabled={true}
+        onPress={() => navigation.navigate('Informacje', {SPLo: SPLongitude, SPLa: SPLatitude})}
+        >
+        <LinearGradient
+        // Background Linear Gradient
+        colors={['#ffc455', '#e08b00']}
+        style={styles.planeViewC}
+        >
+        <View style={styles.startButton}>
+        <Text style={styles.ButtonText}>Wybór samolotu </Text>
+        </View>
+        </LinearGradient>
+        </TouchableOpacity>)}
         
         </View>
       </View>

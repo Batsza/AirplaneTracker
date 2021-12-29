@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Button, ImageBackground,  StyleSheet, View, Text, PermissionsAndroid, FlatList, RefreshControl, SafeAreaView, ScrollView,TouchableOpacity} from 'react-native';
+import { Button, ImageBackground,  StyleSheet, View, Text, PermissionsAndroid, FlatList, RefreshControl,  ScrollView,TouchableOpacity} from 'react-native';
 import * as Location from 'expo-location';
 import Icon from 'react-native-vector-icons/Feather';
 import { Gyroscope } from 'expo-sensors';
 import { LinearGradient } from 'expo-linear-gradient';
+import { DeviceMotion } from 'expo-sensors';
 
 const requestLocationPermission = async () => {
   try {
@@ -30,27 +31,26 @@ const requestLocationPermission = async () => {
 
 };
 
-function InfoScreean({ navigation }) {
+function InfoScreean({ route, navigation }) {
   const [location, setLocation] = useState(null);
   const [SPLongitude, setSPLongitude] = useState(null);
   const [SPLatitude, setSPLatitude] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [compass, setCompass] = useState(null);
-  const [SPLongitudeW1, setSPLongitudeW1] = useState(null);
-  const [SPLongitudeM1, setSPLongitudeM1] = useState(null);
-  const [SPLatitudeW1, setSPLatitudeW1] = useState(null);
-  const [SPLatitudeM1, setSPLatitudeM1] = useState(null);
+  const [SPLongitudeW1, setSPLongitudeW1] = useState(route.params.SPLo+1);
+  const [SPLongitudeM1, setSPLongitudeM1] = useState(route.params.SPLo-1);
+  const [SPLatitudeW1, setSPLatitudeW1] = useState(route.params.SPLa+1);
+  const [SPLatitudeM1, setSPLatitudeM1] = useState(route.params.SPLa-1);
   const [planeData, setplaneData] = useState([]);
 
 
 
 
-  const [data2, setData2] = useState({
+ /* const [data2, setData2] = useState({
     x: 0,
     y: 0,
     z: 0,
   });
-
   const [subscription, setSubscription] = useState(null);
 
   const _subscribe = () => {
@@ -67,12 +67,72 @@ function InfoScreean({ navigation }) {
     setSubscription(null);
   };
 
- /* useEffect(() => {
+  useEffect(() => {
     _subscribe();
     return () => _unsubscribe();
-  }, []);*/
+  }, []);  
 
   const { x, y, z } = data2;
+  function round(n) {
+    if (!n) {
+      return 0;
+    }
+    return Math.floor(n * 100) / 100;
+  }
+  const roundx = Math.floor(x * 100) / 100;
+  const roundy = Math.floor(y * 100) / 100;
+  const roundz = Math.floor(z * 100) / 100;
+
+  const pitch = Math.atan2(-roundx, -roundz) * 180 / Math.PI;
+  const roll = Math.atan2(-roundy, -roundx) * 180 / Math.PI;// In degrees
+  const yaw = Math.atan2(roundy, -roundz) * 180 / Math.PI;// In degrees*/
+
+
+
+  const [motion, setMotion] = useState(null);
+  const [motioDatax, setMotionDatax] = useState(null);
+  const [motioDatay, setMotionDatay] = useState(null);
+  const [motioDataz, setMotionDataz] = useState(null);
+
+
+/*const [motioData,setMotionData] = useState({
+  motioDatax: 0,
+  motioDatay: 0,
+  motioDataz: 0,
+  });*/
+
+  const _motion = () => {
+  
+    
+    DeviceMotion.setUpdateInterval(1000);    
+    setMotion(
+      DeviceMotion.addListener(orientation=> {
+        setMotionDatax(orientation.rotation.alpha);
+        setMotionDatay(orientation.rotation.beta);
+        setMotionDataz(orientation.rotation.gamma);
+
+
+      })
+    );
+  };
+
+  const _unnotion = () => {
+    motion && motion.remove();
+    setMotionDatax(null);
+    setMotionDatay(null);
+    setMotionDataz(null);
+
+  };
+
+  useEffect(() => {
+
+    _motion();
+    return () => _unnotion();
+  }, []);
+  //const { motioDatax2, motioDatay2, motioDataz2 } = motioData;
+  const pitch = motioDatax * 180 / Math.PI;// In degrees
+  const roll = motioDatay * 180 / Math.PI;// In degrees
+  const yaw = motioDataz * 180 / Math.PI;// In degrees
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -88,8 +148,8 @@ function InfoScreean({ navigation }) {
       setSPLatitude(location.coords.latitude);
       setSPLongitudeM1(location.coords.longitude-1);
       setSPLongitudeW1(location.coords.longitude+1);
-      setSPLatitudeW1(location.coords.latitude+1);
-      setSPLatitudeM1(location.coords.latitude-1);
+      setSPLatitudeW1(location.coords.latitude+0.5);//+0.5?
+      setSPLatitudeM1(location.coords.latitude-0.5);
     })();
   }, []);
   const getFlight = async () => {
@@ -106,7 +166,6 @@ function InfoScreean({ navigation }) {
     text = errorMsg;
   } else if (location) {
     text = JSON.stringify("szerokosc " + SPLongitude + " dlugosć " + SPLatitude);
-    getFlight();
   }
 
 
@@ -136,8 +195,8 @@ function InfoScreean({ navigation }) {
   const getCompassData = async () =>{
     let kompas = await Location.getHeadingAsync();
     setCompass(kompas.trueHeading);
-    console.log(" kompas" + compass);
 }
+const compasR =  Math.floor(compass) ;
 useEffect(() => {
 //setInterval(() => getCompassData(), (1000));
 getCompassData();
@@ -162,13 +221,13 @@ getCompassData();
           (planeData.states.map((item)=>{
               return(
                 <TouchableOpacity
-                    onPress={() =>navigation.push('Namierz samolot')}
+                    onPress={() =>navigation.navigate('Namierz samolot', {PlanIco: item[0]})}
                 >
                           <LinearGradient
         // Background Linear Gradient
         colors={['#ffc455', '#e08b00']}
         style={styles.planeViewC}
-        >
+        > 
                 <View  key={item.key}><Text style={styles.InViewText} >Numer lotu:  {item[1]}</Text><Text style={styles.InText}>Kraj lini lotniczych: {item[2]} </Text></View>
                   </LinearGradient>
                 </TouchableOpacity>
@@ -184,15 +243,19 @@ getCompassData();
             <Text>{SPLongitudeW1}</Text>
             <Text>{SPLongitudeM1}</Text>
 
-            </View>{/*
+            </View>
           <View style={styles.planeViewB}> 
             <Text>{text}</Text>
             <Text >Gyroscope:</Text>
-              <Text >
-                x: {x} y: {y} z: {z}
-              </Text>
+            {/*<Text>{motioDatax} + stopni </Text>
+            <Text>{motioDatay}</Text>
+            <Text>{motioDataz}</Text>*/}
+            <Text>{pitch}</Text>
+            <Text>{roll}</Text>
+            <Text>{yaw}</Text>
+
               <Text >Kompas:</Text>
-              <Text >{compass}</Text>
+              <Text >{compasR}</Text>
             </View>
               <View style={styles.planeViewB}> 
                 <Text>
@@ -206,7 +269,7 @@ getCompassData();
                   <Icon name="arrow-up" size={30} color="#00ff04" />
                   <Icon name="target" size={30} color="red" />
             </Text>
-            </View>*/}
+            </View>
     
         </ScrollView>
       </View>     

@@ -7,8 +7,18 @@ import Icon from 'react-native-vector-icons/Feather';
 
 function CameraScrean(props) {
   const [hasPermission, setHasPermission] = useState(null);
-  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [planeIco, setPlaneIco] = useState(props.route.params.PlanIco);
+  console.log(props.route.params.PlanIco);
 
+  const getFlight = async () => {
+    
+    console.log("biore dane");
+    
+    const response = await fetch('https://opensky-network.org/api/states/all?icao24=' + props.route.params.PlanIco);
+    const planes = await response.json();
+    setplaneData(planes);
+}
+  const [type, setType] = useState(Camera.Constants.Type.back);
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
