@@ -36,11 +36,10 @@ function InfoScreean({ route, navigation }) {
   const [SPLongitude, setSPLongitude] = useState(null);
   const [SPLatitude, setSPLatitude] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [compass, setCompass] = useState(null);
   const [SPLongitudeW1, setSPLongitudeW1] = useState(route.params.SPLo+1);
   const [SPLongitudeM1, setSPLongitudeM1] = useState(route.params.SPLo-1);
-  const [SPLatitudeW1, setSPLatitudeW1] = useState(route.params.SPLa+1);
-  const [SPLatitudeM1, setSPLatitudeM1] = useState(route.params.SPLa-1);
+  const [SPLatitudeW1, setSPLatitudeW1] = useState(route.params.SPLa+0.5);
+  const [SPLatitudeM1, setSPLatitudeM1] = useState(route.params.SPLa-0.5);
   const [planeData, setplaneData] = useState([]);
 
 
@@ -88,7 +87,6 @@ function InfoScreean({ route, navigation }) {
   const yaw = Math.atan2(roundy, -roundz) * 180 / Math.PI;// In degrees*/
 
 
-
   const [motion, setMotion] = useState(null);
   const [motioDatax, setMotionDatax] = useState(null);
   const [motioDatay, setMotionDatay] = useState(null);
@@ -99,11 +97,9 @@ function InfoScreean({ route, navigation }) {
   motioDatax: 0,
   motioDatay: 0,
   motioDataz: 0,
-  });*/
+  });
 
   const _motion = () => {
-  
-    
     DeviceMotion.setUpdateInterval(1000);    
     setMotion(
       DeviceMotion.addListener(orientation=> {
@@ -128,7 +124,7 @@ function InfoScreean({ route, navigation }) {
 
     _motion();
     return () => _unnotion();
-  }, []);
+  }, []);*/
   //const { motioDatax2, motioDatay2, motioDataz2 } = motioData;
   const pitch = motioDatax * 180 / Math.PI;// In degrees
   const roll = motioDatay * 180 / Math.PI;// In degrees
@@ -169,9 +165,6 @@ function InfoScreean({ route, navigation }) {
   }
 
 
-
-
-
     
   useEffect(() => {
        // setInterval(() => getFlight(), (1000))
@@ -192,15 +185,7 @@ function InfoScreean({ route, navigation }) {
     wait(2000).then(() => setRefreshing(false));
   }, []);
   
-  const getCompassData = async () =>{
-    let kompas = await Location.getHeadingAsync();
-    setCompass(kompas.trueHeading);
-}
-const compasR =  Math.floor(compass) ;
-useEffect(() => {
-//setInterval(() => getCompassData(), (1000));
-getCompassData();
-}, []);
+
 
   return (
       
@@ -234,16 +219,6 @@ getCompassData();
                   )
               }
           ))}
-          <View style={styles.planeViewA}>
-
-            <Text>{SPLatitudeW1}</Text>
-            <Text>{SPLatitudeM1}</Text>
-            <Text>{SPLatitude}</Text>
-            <Text>{SPLongitude}</Text>
-            <Text>{SPLongitudeW1}</Text>
-            <Text>{SPLongitudeM1}</Text>
-
-            </View>
           <View style={styles.planeViewB}> 
             <Text>{text}</Text>
             <Text >Gyroscope:</Text>
@@ -254,8 +229,7 @@ getCompassData();
             <Text>{roll}</Text>
             <Text>{yaw}</Text>
 
-              <Text >Kompas:</Text>
-              <Text >{compasR}</Text>
+
             </View>
               <View style={styles.planeViewB}> 
                 <Text>
@@ -320,11 +294,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 42,
   },
-  planeViewA:{
-    width: '100%',
-    backgroundColor: "red",
 
-  },
   startWidok:{
     width: '100%',
     height: '100%',
