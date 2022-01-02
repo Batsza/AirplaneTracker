@@ -35,6 +35,7 @@ function InfoScreean({ route, navigation }) {
   const [location, setLocation] = useState(null);
   const [SPLongitude, setSPLongitude] = useState(null);
   const [SPLatitude, setSPLatitude] = useState(null);
+  const [SPAltitude, setSPAltitude] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [SPLongitudeW1, setSPLongitudeW1] = useState(route.params.SPLo+1);
   const [SPLongitudeM1, setSPLongitudeM1] = useState(route.params.SPLo-1);
@@ -142,6 +143,7 @@ function InfoScreean({ route, navigation }) {
       setLocation(location);
       setSPLongitude(location.coords.longitude);
       setSPLatitude(location.coords.latitude);
+      setSPAltitude(location.coords.altitude);
       setSPLongitudeM1(location.coords.longitude-1);
       setSPLongitudeW1(location.coords.longitude+1);
       setSPLatitudeW1(location.coords.latitude+0.5);//+0.5?
@@ -206,7 +208,7 @@ function InfoScreean({ route, navigation }) {
           (planeData.states.map((item)=>{
               return(
                 <TouchableOpacity
-                    onPress={() =>navigation.navigate('Namierz samolot', {PlanIco: item[0]})}
+                    onPress={() =>navigation.navigate('Namierz samolot', {PlanIco: item[0], SPLO: SPLongitude, SPLA: SPLatitude, SPA: SPAltitude})}
                 >
                           <LinearGradient
         // Background Linear Gradient

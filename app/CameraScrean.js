@@ -3,7 +3,7 @@ import { Camera } from 'expo-camera';
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import * as Location from 'expo-location';
-
+import {getDistance, getPreciseDistance} from 'geolib';
 
 
 function CameraScrean(props) {
@@ -11,10 +11,11 @@ function CameraScrean(props) {
   const [planeData, setplaneData] = useState([]);
   const [compass, setCompass] = useState(null);
   const [location, setLocation] = useState(null);
-  const [SPLongitude, setSPLongitude] = useState(null);
-  const [SPLatitude, setSPLatitude] = useState(null);
-  const [SPAltitude, setSPAltitude] = useState(null);
+  const [SPLongitude, setSPLongitude] = useState(props.route.params.SPLO);
+  const [SPLatitude, setSPLatitude] = useState(props.route.params.SPLA);
+  const [SPAltitude, setSPAltitude] = useState(props.route.params.SPA);
   const [degris, setDegris]= useState(null);
+  const [angle, setAngle]= useState(0);
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -37,10 +38,17 @@ function CameraScrean(props) {
     const planes = await response.json();
     setplaneData(planes);
     //console.log(planes);
-    //console.log(planes.states[0][1]);
-    const deltaLongitude = SPLongitude - planes.states[0][5] ;
-    const azimuthRad = Math.atan2(Math.sin(deltaLongitude)*Math.cos(SPLatitude),
-    (Math.cos(planes.states[0][6])*Math.sin(SPLatitude)-Math.sin(planes.states[0][6])*Math.cos(SPLatitude)*Math.cos(deltaLongitude)));
+    let dis = getDistance(
+      {latitude: SPLatitude, longitude: SPLongitude},
+      {latitude: planes.states[0][6], longitude: planes.states[0][5]},
+    );
+      let wys = planes.states[0][13] -SPAltitude ;
+      let kat = Math.atan(dis/wys)* 180 / Math.PI;
+
+      setAngle(Math.round(kat));
+    const deltaLongitude =  planes.states[0][5] - SPLongitude ;
+    const azimuthRad = Math.atan2(Math.sin(deltaLongitude)*Math.cos(planes.states[0][6]),
+    (Math.cos(SPLatitude)*Math.sin(planes.states[0][6])-Math.sin(SPLatitude)*Math.cos(planes.states[0][6])*Math.cos(deltaLongitude)));
     //console.log(azimuthRad);
     const degr = azimuthRad * 180 / Math.PI;
     if(degr>0){
@@ -49,7 +57,6 @@ function CameraScrean(props) {
       setDegris(Math.round(360 + degr))
     }
 
-    console.log(degr);
 }
   const [type, setType] = useState(Camera.Constants.Type.back);
   useEffect(() => {
@@ -88,10 +95,8 @@ function CameraScrean(props) {
     }else {
       newdegri=degris+180;
     }
-    console.log("XD");
     console.log(degris);
     if(degris+10>compasR&&degris-10<compasR){
-      console.log("XDDDDDDDF")
       return (
         <Text style={styles.text}> 
               <Icon name="target" size={300} color="red" /> 
@@ -124,6 +129,7 @@ function CameraScrean(props) {
       <View style={styles.infoView}>
       <Text style={styles.text} >Kompas: {compasR} </Text>
       <Text style={styles.text} >ile ma być : {degris} </Text>
+      <Text style={styles.text} >jak w góre  : {angle} </Text>
 
       </View>
       <View style={styles.buttonContainer}>
