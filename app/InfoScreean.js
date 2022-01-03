@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Button, ImageBackground,  StyleSheet, View, Text, PermissionsAndroid, FlatList, RefreshControl,  ScrollView,TouchableOpacity} from 'react-native';
 import * as Location from 'expo-location';
 import Icon from 'react-native-vector-icons/Feather';
-import { Gyroscope } from 'expo-sensors';
 import { LinearGradient } from 'expo-linear-gradient';
-import { DeviceMotion } from 'expo-sensors';
+
+
 
 const requestLocationPermission = async () => {
   try {
@@ -44,98 +44,11 @@ function InfoScreean({ route, navigation }) {
   const [planeData, setplaneData] = useState([]);
 
 
-
-
- /* const [data2, setData2] = useState({
-    x: 0,
-    y: 0,
-    z: 0,
-  });
-  const [subscription, setSubscription] = useState(null);
-
-  const _subscribe = () => {
-    Gyroscope.setUpdateInterval(1000);
-    setSubscription(
-      Gyroscope.addListener(gyroscopeData => {
-        setData2(gyroscopeData);
-      })
-    );
-  };
-
-  const _unsubscribe = () => {
-    subscription && subscription.remove();
-    setSubscription(null);
-  };
-
-  useEffect(() => {
-    _subscribe();
-    return () => _unsubscribe();
-  }, []);  
-
-  const { x, y, z } = data2;
-  function round(n) {
-    if (!n) {
-      return 0;
-    }
-    return Math.floor(n * 100) / 100;
-  }
-  const roundx = Math.floor(x * 100) / 100;
-  const roundy = Math.floor(y * 100) / 100;
-  const roundz = Math.floor(z * 100) / 100;
-
-  const pitch = Math.atan2(-roundx, -roundz) * 180 / Math.PI;
-  const roll = Math.atan2(-roundy, -roundx) * 180 / Math.PI;// In degrees
-  const yaw = Math.atan2(roundy, -roundz) * 180 / Math.PI;// In degrees*/
-
-
-  const [motion, setMotion] = useState(null);
-  const [motioDatax, setMotionDatax] = useState(null);
-  const [motioDatay, setMotionDatay] = useState(null);
-  const [motioDataz, setMotionDataz] = useState(null);
-
-
-/*const [motioData,setMotionData] = useState({
-  motioDatax: 0,
-  motioDatay: 0,
-  motioDataz: 0,
-  });
-
-  const _motion = () => {
-    DeviceMotion.setUpdateInterval(1000);    
-    setMotion(
-      DeviceMotion.addListener(orientation=> {
-        setMotionDatax(orientation.rotation.alpha);
-        setMotionDatay(orientation.rotation.beta);
-        setMotionDataz(orientation.rotation.gamma);
-
-
-      })
-    );
-  };
-
-  const _unnotion = () => {
-    motion && motion.remove();
-    setMotionDatax(null);
-    setMotionDatay(null);
-    setMotionDataz(null);
-
-  };
-
-  useEffect(() => {
-
-    _motion();
-    return () => _unnotion();
-  }, []);*/
-  //const { motioDatax2, motioDatay2, motioDataz2 } = motioData;
-  const pitch = motioDatax * 180 / Math.PI;// In degrees
-  const roll = motioDatay * 180 / Math.PI;// In degrees
-  const yaw = motioDataz * 180 / Math.PI;// In degrees
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
-        console.log("zlexd");
         return;
       }
 
@@ -153,8 +66,8 @@ function InfoScreean({ route, navigation }) {
   const getFlight = async () => {
     
     console.log("biore dane");
-    //const response = await fetch('https://opensky-network.org/api/states/all?lamin=50.1107&lomin=19.4215&lamax=51.2032&lomax=21.52108');
-    const response = await fetch('https://opensky-network.org/api/states/all?lamin='+SPLatitudeM1+'&lomin='+SPLongitudeM1+'&lamax='+SPLatitudeW1+'&lomax='+SPLongitudeW1);
+    const response = await fetch('https://opensky-network.org/api/states/all?lamin=50.1107&lomin=19.4215&lamax=51.2032&lomax=21.52108');
+    //const response = await fetch('https://opensky-network.org/api/states/all?lamin='+SPLatitudeM1+'&lomin='+SPLongitudeM1+'&lamax='+SPLatitudeW1+'&lomax='+SPLongitudeW1);
     const planes = await response.json();
     setplaneData(planes);
 }
@@ -221,32 +134,6 @@ function InfoScreean({ route, navigation }) {
                   )
               }
           ))}
-          <View style={styles.planeViewB}> 
-            <Text>{text}</Text>
-            <Text >Gyroscope:</Text>
-            {/*<Text>{motioDatax} + stopni </Text>
-            <Text>{motioDatay}</Text>
-            <Text>{motioDataz}</Text>*/}
-            <Text>{pitch}</Text>
-            <Text>{roll}</Text>
-            <Text>{yaw}</Text>
-
-
-            </View>
-              <View style={styles.planeViewB}> 
-                <Text>
-                  <Icon name="arrow-down-left" size={60} color="#00ff04" />
-                  <Icon name="arrow-down-right" size={30} color="#00ff04" />
-                  <Icon name="arrow-up-left" size={30} color="#00ff04" />
-                  <Icon name="arrow-up-right" size={30} color="#00ff04" />
-                  <Icon name="arrow-down" size={30} color="#00ff04" />
-                  <Icon name="arrow-right" size={30} color="#00ff04" />
-                  <Icon name="arrow-left" size={30} color="#00ff04" />
-                  <Icon name="arrow-up" size={30} color="#00ff04" />
-                  <Icon name="target" size={30} color="red" />
-            </Text>
-            </View>
-    
         </ScrollView>
       </View>     
         

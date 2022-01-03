@@ -3,7 +3,8 @@ import { Camera } from 'expo-camera';
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import * as Location from 'expo-location';
-import {getDistance, getPreciseDistance} from 'geolib';
+import {getDistance} from 'geolib';
+import { DeviceMotion } from 'expo-sensors';
 
 
 function CameraScrean(props) {
@@ -16,12 +17,12 @@ function CameraScrean(props) {
   const [SPAltitude, setSPAltitude] = useState(props.route.params.SPA);
   const [degris, setDegris]= useState(null);
   const [angle, setAngle]= useState(0);
+
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
-        console.log("zlexd");
         return;
       }
 
@@ -31,8 +32,31 @@ function CameraScrean(props) {
       setSPLongitude(location.coords.longitude);
       setSPLatitude(location.coords.latitude);
       setSPAltitude(location.coords.altitude);
+
     })();
   }, []);
+  const [motion, setMotion] = useState(null);
+  const [motioDatay, setMotionDatay] = useState(null);
+  const _motion = () => {
+    DeviceMotion.setUpdateInterval(1000);    
+    setMotion(
+      DeviceMotion.addListener(orientation=> {
+        setMotionDatay(orientation.rotation.beta);
+      })
+    );
+  };
+  const _unnotion = () => {
+    motion && motion.remove();
+    setMotionDatay(null);
+  };
+
+  useEffect(() => {
+    _motion();
+    return () => _unnotion();
+  }, []);
+
+  const roll = Math.round(((motioDatay * 180 / Math.PI) - 90)*(-1));// In degrees
+  
   const getFlight = async () => {
     const response = await fetch('https://opensky-network.org/api/states/all?icao24=' + props.route.params.PlanIco);
     const planes = await response.json();
@@ -43,7 +67,7 @@ function CameraScrean(props) {
       {latitude: planes.states[0][6], longitude: planes.states[0][5]},
     );
       let wys = planes.states[0][13] -SPAltitude ;
-      let kat = Math.atan(dis/wys)* 180 / Math.PI;
+      let kat = Math.atan(wys/dis) * 180 / Math.PI;
 
       setAngle(Math.round(kat));
     const deltaLongitude =  planes.states[0][5] - SPLongitude ;
@@ -67,14 +91,15 @@ function CameraScrean(props) {
   }, []);
 
 
+
   const getCompassData = async () =>{
 
     let kompas = await Location.getHeadingAsync();
     setCompass(kompas.trueHeading);
   }
-  const compasR =  Math.floor(compass) ;
+  const compasR =  Math.round(compass) ;
     useEffect(() => {
-    setInterval(() => getCompassData(), (500));
+    setInterval(() => getCompassData(), (1000));
     getCompassData();
   }, []);
   useEffect(() => {
@@ -95,29 +120,78 @@ function CameraScrean(props) {
     }else {
       newdegri=degris+180;
     }
-    console.log(degris);
-    if(degris+10>compasR&&degris-10<compasR){
+
+    if(degris+10>compasR&&degris-10<compasR&&angle+2>roll&&angle-2<roll){
       return (
         <Text style={styles.text}> 
               <Icon name="target" size={300} color="red" /> 
       </Text>
       );
-    }else if(compasR<degris-10&&compasR>newdegri){
+    }else if(compasR<=degris-10&&compasR>newdegri&&angle+2>roll&&angle-2<roll){
       return (
         <Text style={styles.text}> 
           <Icon name="arrow-right" size={300} color="#00ff04" />
       </Text>
       );
-    }else if(compasR>degris+10) {
+    }else if(compasR>=degris+10&&angle+2>roll&&angle-2<roll) {
       return (
         <Text style={styles.text}> 
           <Icon name="arrow-left" size={300} color="#00ff04" />
       </Text>
       );
-    }else if(compasR<=newdegri){
+    }else if(compasR<=newdegri&&angle+2>roll&&angle-2<roll){
       return (
         <Text style={styles.text}> 
           <Icon name="arrow-left" size={300} color="#00ff04" />
+      </Text>
+      );
+    }else if(degris+10>compasR&&degris-10<compasR&&angle-2>=roll){
+      return (
+        <Text style={styles.text}> 
+          <Icon name="arrow-up" size={300} color="#00ff04" />
+      </Text>
+      );
+    }
+    else if(degris+10>compasR&&degris-10<compasR&&angle+2<=roll){
+      return (
+        <Text style={styles.text}> 
+          <Icon name="arrow-down" size={300} color="#00ff04" />
+      </Text>
+      );
+    }else if(compasR<=degris-10&&compasR>newdegri<compasR&&angle+2<=roll){
+      return (
+        <Text style={styles.text}> 
+          <Icon name="arrow-down-right" size={300} color="#00ff04" />
+      </Text>
+      );
+    }else if(compasR<=degris-10&&compasR>newdegri&&angle-2>=roll){
+      return (
+        <Text style={styles.text}> 
+          <Icon name="arrow-up-right" size={300} color="#00ff04" />
+      </Text>
+      );
+    }else if(compasR>=degris+10&&angle-2>=roll){
+      return (
+        <Text style={styles.text}> 
+          <Icon name="arrow-up-left" size={300} color="#00ff04" />
+      </Text>
+      );
+    }else if(compasR>=degris+10&&angle+2<=roll){
+      return (
+        <Text style={styles.text}> 
+          <Icon name="arrow-down-left" size={300} color="#00ff04" />
+      </Text>
+      );
+    }else if(compasR<=newdegri&&angle-2>=roll){
+      return (
+        <Text style={styles.text}> 
+          <Icon name="arrow-up-left" size={300} color="#00ff04" />
+      </Text>
+      );
+    }else if(compasR<=newdegri&&angle+2<=roll){
+      return (
+        <Text style={styles.text}> 
+          <Icon name="arrow-down-left" size={300} color="#00ff04" />
       </Text>
       );
     }
@@ -130,6 +204,8 @@ function CameraScrean(props) {
       <Text style={styles.text} >Kompas: {compasR} </Text>
       <Text style={styles.text} >ile ma być : {degris} </Text>
       <Text style={styles.text} >jak w góre  : {angle} </Text>
+      <Text style={styles.text} >ile jest   : {roll} </Text>
+
 
       </View>
       <View style={styles.buttonContainer}>
