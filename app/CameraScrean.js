@@ -4,8 +4,7 @@ import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import * as Location from 'expo-location';
 import {getDistance} from 'geolib';
-import { DeviceMotion } from 'expo-sensors';
-
+import { DeviceMotion, Magnetometer } from 'expo-sensors';
 
 function CameraScrean(props) {
   const [hasPermission, setHasPermission] = useState(null);
@@ -35,28 +34,82 @@ function CameraScrean(props) {
 
     })();
   }, []);
+
+  
+
   const [motion, setMotion] = useState(null);
-  const [motioDatay, setMotionDatay] = useState(null);
+  const [motioData, setMotionData] = useState({
+    alpha: 0,
+    beta: 0,
+    gamma: 0,
+  });
   const _motion = () => {
     DeviceMotion.setUpdateInterval(1000);    
     setMotion(
       DeviceMotion.addListener(orientation=> {
-        setMotionDatay(orientation.rotation.beta);
+        setMotionData(orientation.rotation);
       })
     );
   };
   const _unnotion = () => {
     motion && motion.remove();
-    setMotionDatay(null);
+    setMotion(null);
   };
 
   useEffect(() => {
     _motion();
     return () => _unnotion();
   }, []);
+  const { alpha, beta, gamma } = motioData;
+  const roll = Math.round(((beta * 180 / Math.PI) - 90)*(-1));// In degrees
 
-  const roll = Math.round(((motioDatay * 180 / Math.PI) - 90)*(-1));// In degrees
   
+  const [subscriptionData, setSubscriptionData] = useState(null);
+  const [magnetometer, setMagnetometer] = useState(0);
+
+  useEffect(() => {
+    _toggle();
+    return () => {
+      _unsubscribe();
+    };
+  }, []);
+
+  const _toggle = () => {
+    if (subscriptionData) {
+      _unsubscribe();
+    } else {
+      _subscribe();
+    }
+  };
+
+  const _subscribe = () => {
+    
+    setSubscriptionData(
+      Magnetometer.addListener((data) => {
+        setMagnetometer(_angle(data));
+      })
+    );
+  };
+
+  const _unsubscribe = () => {
+    subscriptionData && subscriptionData.remove();
+    setSubscriptionData(null);
+  };
+
+  const _angle = (magnetometer) => {
+    let angle = 0;
+    if (magnetometer) {
+      let { x, y, z } = magnetometer;
+        angle = (Math.atan2(z, x)*-1) * (180 / Math.PI);
+   
+    }
+    return Math.round(angle);
+  };
+
+  const _degree = (magnetometer) => {
+    return magnetometer  - 90 >= 0 ? magnetometer - 90 : magnetometer + 271;
+  };
+
   const getFlight = async () => {
     const response = await fetch('https://opensky-network.org/api/states/all?icao24=' + props.route.params.PlanIco);
     const planes = await response.json();
@@ -89,15 +142,14 @@ function CameraScrean(props) {
       setHasPermission(status === 'granted');
     })();
   }, []);
-
-
-
+ 
+  
   const getCompassData = async () =>{
-
     let kompas = await Location.getHeadingAsync();
     setCompass(kompas.trueHeading);
   }
-  const compasR =  Math.round(compass) ;
+  const compasR =  _degree(magnetometer) ;
+  //const compasR =  Math.round(compass); ;
     useEffect(() => {
     setInterval(() => getCompassData(), (1000));
     getCompassData();
@@ -121,74 +173,74 @@ function CameraScrean(props) {
       newdegri=degris+180;
     }
 
-    if(degris+10>compasR&&degris-10<compasR&&angle+2>roll&&angle-2<roll){
+    if(degris+10>compasR&&degris-10<compasR&&angle+3>roll&&angle-3<roll){
       return (
         <Text style={styles.text}> 
               <Icon name="target" size={300} color="red" /> 
       </Text>
       );
-    }else if(compasR<=degris-10&&compasR>newdegri&&angle+2>roll&&angle-2<roll){
+    }else if(compasR<=degris-10&&compasR>newdegri&&angle+3>roll&&angle-3<roll){
       return (
         <Text style={styles.text}> 
           <Icon name="arrow-right" size={300} color="#00ff04" />
       </Text>
       );
-    }else if(compasR>=degris+10&&angle+2>roll&&angle-2<roll) {
+    }else if(compasR>=degris+10&&angle+3>roll&&angle-3<roll) {
       return (
         <Text style={styles.text}> 
           <Icon name="arrow-left" size={300} color="#00ff04" />
       </Text>
       );
-    }else if(compasR<=newdegri&&angle+2>roll&&angle-2<roll){
+    }else if(compasR<=newdegri&&angle+3>roll&&angle-3<roll){
       return (
         <Text style={styles.text}> 
           <Icon name="arrow-left" size={300} color="#00ff04" />
       </Text>
       );
-    }else if(degris+10>compasR&&degris-10<compasR&&angle-2>=roll){
+    }else if(degris+10>compasR&&degris-10<compasR&&angle-3>=roll){
       return (
         <Text style={styles.text}> 
           <Icon name="arrow-up" size={300} color="#00ff04" />
       </Text>
       );
     }
-    else if(degris+10>compasR&&degris-10<compasR&&angle+2<=roll){
+    else if(degris+10>compasR&&degris-10<compasR&&angle+3<=roll){
       return (
         <Text style={styles.text}> 
           <Icon name="arrow-down" size={300} color="#00ff04" />
       </Text>
       );
-    }else if(compasR<=degris-10&&compasR>newdegri<compasR&&angle+2<=roll){
+    }else if(compasR<=degris-10&&compasR>newdegri<compasR&&angle+3<=roll){
       return (
         <Text style={styles.text}> 
           <Icon name="arrow-down-right" size={300} color="#00ff04" />
       </Text>
       );
-    }else if(compasR<=degris-10&&compasR>newdegri&&angle-2>=roll){
+    }else if(compasR<=degris-10&&compasR>newdegri&&angle-3>=roll){
       return (
         <Text style={styles.text}> 
           <Icon name="arrow-up-right" size={300} color="#00ff04" />
       </Text>
       );
-    }else if(compasR>=degris+10&&angle-2>=roll){
+    }else if(compasR>=degris+10&&angle-3>=roll){
       return (
         <Text style={styles.text}> 
           <Icon name="arrow-up-left" size={300} color="#00ff04" />
       </Text>
       );
-    }else if(compasR>=degris+10&&angle+2<=roll){
+    }else if(compasR>=degris+10&&angle+3<=roll){
       return (
         <Text style={styles.text}> 
           <Icon name="arrow-down-left" size={300} color="#00ff04" />
       </Text>
       );
-    }else if(compasR<=newdegri&&angle-2>=roll){
+    }else if(compasR<=newdegri&&angle-3>=roll){
       return (
         <Text style={styles.text}> 
           <Icon name="arrow-up-left" size={300} color="#00ff04" />
       </Text>
       );
-    }else if(compasR<=newdegri&&angle+2<=roll){
+    }else if(compasR<=newdegri&&angle+3<=roll){
       return (
         <Text style={styles.text}> 
           <Icon name="arrow-down-left" size={300} color="#00ff04" />
@@ -205,6 +257,8 @@ function CameraScrean(props) {
       <Text style={styles.text} >ile ma być : {degris} </Text>
       <Text style={styles.text} >jak w góre  : {angle} </Text>
       <Text style={styles.text} >ile jest   : {roll} </Text>
+      <Text style={styles.text} >pich  : {_degree(magnetometer)} </Text>
+
 
 
       </View>

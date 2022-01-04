@@ -86,7 +86,7 @@ function WelcomeScreen({ route, navigation }) {
         >
         <LinearGradient
         // Background Linear Gradient
-        colors={['#ffc455', '#e08b00']}
+        colors={['#6e6e6e', '#6e6e6e']}
         style={styles.planeViewC}
         >
         <View style={styles.startButton}>
