@@ -65,8 +65,8 @@ function InfoScreean({ route, navigation }) {
   }, []);
   const getFlight = async () => {
     
-    const response = await fetch('https://opensky-network.org/api/states/all?lamin=30.1107&lomin=12.4215&lamax=51.2032&lomax=21.52108');
-    //const response = await fetch('https://opensky-network.org/api/states/all?lamin='+SPLatitudeM1+'&lomin='+SPLongitudeM1+'&lamax='+SPLatitudeW1+'&lomax='+SPLongitudeW1);
+    //const response = await fetch('https://opensky-network.org/api/states/all?lamin=50.1107&lomin=19.4215&lamax=51.2032&lomax=21.52108');
+    const response = await fetch('https://opensky-network.org/api/states/all?lamin='+SPLatitudeM1+'&lomin='+SPLongitudeM1+'&lamax='+SPLatitudeW1+'&lomax='+SPLongitudeW1);
     const planes = await response.json();
     setplaneData(planes);
 }

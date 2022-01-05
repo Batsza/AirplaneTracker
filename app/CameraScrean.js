@@ -39,9 +39,7 @@ function CameraScrean(props) {
 
   const [motion, setMotion] = useState(null);
   const [motioData, setMotionData] = useState({
-    alpha: 0,
     beta: 0,
-    gamma: 0,
   });
   const _motion = () => {
     DeviceMotion.setUpdateInterval(1000);    
@@ -60,7 +58,7 @@ function CameraScrean(props) {
     _motion();
     return () => _unnotion();
   }, []);
-  const { alpha, beta, gamma } = motioData;
+  const {  beta } = motioData;
   const roll = Math.round(((beta * 180 / Math.PI) - 90)*(-1));// In degrees
 
   
@@ -171,6 +169,7 @@ function CameraScrean(props) {
       newdegri =degris-180;
     }else {
       newdegri=degris+180;
+      
     }
 
     if(degris+10>compasR&&degris-10<compasR&&angle+3>roll&&angle-3<roll){
@@ -185,16 +184,22 @@ function CameraScrean(props) {
           <Icon name="arrow-right" size={300} color="#00ff04" />
       </Text>
       );
-    }else if(compasR>=degris+10&&angle+3>roll&&angle-3<roll) {
+    }else if(compasR>=degris+10&&compasR<=newdegri&&angle+3>roll&&angle-3<roll) {
       return (
         <Text style={styles.text}> 
           <Icon name="arrow-left" size={300} color="#00ff04" />
       </Text>
       );
-    }else if(compasR<=newdegri&&angle+3>roll&&angle-3<roll){
+    }else if(compasR>=degris+10&&angle+3>roll&&angle-3<roll||compasR<=newdegri&&angle+3>roll&&angle-3<roll){
       return (
         <Text style={styles.text}> 
           <Icon name="arrow-left" size={300} color="#00ff04" />
+      </Text>
+      );
+    }else if(compasR<=degris-10&&angle+3>roll&&angle-3<roll||compasR>newdegri&&angle+3>roll&&angle-3<roll){
+      return (
+        <Text style={styles.text}> 
+          <Icon name="arrow-right" size={300} color="#00ff04" />
       </Text>
       );
     }else if(degris+10>compasR&&degris-10<compasR&&angle-3>=roll){
@@ -210,40 +215,52 @@ function CameraScrean(props) {
           <Icon name="arrow-down" size={300} color="#00ff04" />
       </Text>
       );
-    }else if(compasR<=degris-10&&compasR>newdegri<compasR&&angle+3<=roll){
-      return (
-        <Text style={styles.text}> 
-          <Icon name="arrow-down-right" size={300} color="#00ff04" />
-      </Text>
-      );
     }else if(compasR<=degris-10&&compasR>newdegri&&angle-3>=roll){
       return (
         <Text style={styles.text}> 
           <Icon name="arrow-up-right" size={300} color="#00ff04" />
       </Text>
       );
-    }else if(compasR>=degris+10&&angle-3>=roll){
+    }else if(compasR>=degris+10&&compasR<=newdegri&&angle-3>=roll) {
       return (
         <Text style={styles.text}> 
           <Icon name="arrow-up-left" size={300} color="#00ff04" />
       </Text>
       );
-    }else if(compasR>=degris+10&&angle+3<=roll){
-      return (
-        <Text style={styles.text}> 
-          <Icon name="arrow-down-left" size={300} color="#00ff04" />
-      </Text>
-      );
-    }else if(compasR<=newdegri&&angle-3>=roll){
+    }else if(compasR>=degris+10&&angle-3>=roll||compasR<=newdegri&&angle-3>=roll){
       return (
         <Text style={styles.text}> 
           <Icon name="arrow-up-left" size={300} color="#00ff04" />
       </Text>
       );
-    }else if(compasR<=newdegri&&angle+3<=roll){
+    }else if(compasR<=degris-10&&angle-3>=roll||compasR>newdegri&&angle-3>=roll){
+      return (
+        <Text style={styles.text}> 
+          <Icon name="arrow-up-right" size={300} color="#00ff04" />
+      </Text>
+      );
+    }else if(compasR<=degris-10&&compasR>newdegri&&angle+3<=roll){
+      return (
+        <Text style={styles.text}> 
+          <Icon name="arrow-down-right" size={300} color="#00ff04" />
+      </Text>
+      );
+    }else if(compasR>=degris+10&&compasR<=newdegri&&angle+3<=roll) {
       return (
         <Text style={styles.text}> 
           <Icon name="arrow-down-left" size={300} color="#00ff04" />
+      </Text>
+      );
+    }else if(compasR>=degris+10&&angle+3<=roll||compasR<=newdegri&&angle+3<=roll){
+      return (
+        <Text style={styles.text}> 
+          <Icon name="arrow-down-left" size={300} color="#00ff04" />
+      </Text>
+      );
+    }else if(compasR<=degris-10&&angle+3<=roll||compasR>newdegri&&angle+3<=roll){
+      return (
+        <Text style={styles.text}> 
+          <Icon name="arrow-down-right" size={300} color="#00ff04" />
       </Text>
       );
     }
@@ -253,11 +270,11 @@ function CameraScrean(props) {
     <View style={styles.container}>
     <Camera style={styles.camera} type={type}>
       <View style={styles.infoView}>
-      <Text style={styles.text} >Kompas: {compasR} </Text>
-      <Text style={styles.text} >ile ma być : {degris} </Text>
-      <Text style={styles.text} >jak w góre  : {angle} </Text>
-      <Text style={styles.text} >ile jest   : {roll} </Text>
-      <Text style={styles.text} >pich  : {_degree(magnetometer)} </Text>
+      <Text style={styles.text} >Kierunek w którym patrzysz: {compasR} </Text>
+      <Text style={styles.text} >Kierunek w który musisz patrzeć: {degris} </Text>
+      <Text style={styles.text} >Kąt telefonu: {roll} </Text>
+      <Text style={styles.text} >Kąt jaki muszisz ustawić: {angle} </Text>
+      
 
 
 
