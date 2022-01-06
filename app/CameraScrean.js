@@ -16,6 +16,7 @@ function CameraScrean(props) {
   const [SPAltitude, setSPAltitude] = useState(props.route.params.SPA);
   const [degris, setDegris]= useState(null);
   const [angle, setAngle]= useState(0);
+  const [gitStop, setGitStop]= useState(null);
 
   useEffect(() => {
     (async () => {
@@ -99,7 +100,7 @@ function CameraScrean(props) {
     if (magnetometer) {
       let { x, y, z } = magnetometer;
         angle = (Math.atan2(z, x)*-1) * (180 / Math.PI);
-   
+
     }
     return Math.round(angle);
   };
@@ -162,6 +163,30 @@ function CameraScrean(props) {
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
   }
+  const renderUpDown=()=>{
+    if(angle+3>roll&&angle-3<roll){
+      console.log("XD2");
+      return (
+        <Text style={styles.text}> 
+              <Icon name="target" size={300} color="red" /> 
+      </Text>
+      );
+    }
+    else if(angle-3>=roll){
+      return (
+        <Text style={styles.text}> 
+          <Icon name="arrow-up" size={300} color="#00ff04" />
+      </Text>
+      );
+    }
+    else if(angle+3<=roll){
+      return (
+        <Text style={styles.text}> 
+          <Icon name="arrow-down" size={300} color="#00ff04" />
+      </Text>
+      );
+    }
+  }
 
   const renderElement = ()=>{
     let newdegri=0;
@@ -171,8 +196,42 @@ function CameraScrean(props) {
       newdegri=degris+180;
       
     }
+    if(gitStop!=null){
+      renderUpDown();
+      
+    }
+    else if (degris+5>compasR&&degris-5<compasR){
+        setGitStop(compasR);
+    }
+    else if(compasR<=degris-5&&compasR>newdegri){
+      return (
+        <Text style={styles.text}> 
+          <Icon name="arrow-right" size={300} color="#00ff04" />
+      </Text>
+      );
+    }else if(compasR>=degris+5&&compasR<=newdegri) {
+      return (
+        <Text style={styles.text}> 
+          <Icon name="arrow-left" size={300} color="#00ff04" />
+      </Text>
+      );
+    }else if(compasR>=degris+5||compasR<=newdegri){
+      return (
+        <Text style={styles.text}> 
+          <Icon name="arrow-left" size={300} color="#00ff04" />
+      </Text>
+      );
+    }else if(compasR<=degris-5||compasR>newdegri){
+      return (
+        <Text style={styles.text}> 
+          <Icon name="arrow-right" size={300} color="#00ff04" />
+      </Text>
+      );
+    }
 
-    if(degris+10>compasR&&degris-10<compasR&&angle+3>roll&&angle-3<roll){
+
+
+    /*if(degris+10>compasR&&degris-10<compasR&&angle+3>roll&&angle-3<roll){
       return (
         <Text style={styles.text}> 
               <Icon name="target" size={300} color="red" /> 
@@ -263,7 +322,7 @@ function CameraScrean(props) {
           <Icon name="arrow-down-right" size={300} color="#00ff04" />
       </Text>
       );
-    }
+    }*/
   }
 
   return (
@@ -292,6 +351,7 @@ function CameraScrean(props) {
       
         </TouchableOpacity>
           {renderElement()}
+          {renderUpDown()}
       </View>
     </Camera>
   </View>

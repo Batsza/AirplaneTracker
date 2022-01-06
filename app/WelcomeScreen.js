@@ -66,7 +66,8 @@ function WelcomeScreen({ route, navigation }) {
         <View style={styles.startWidok}> 
         <Text style={styles.NormalText}>{"\n"}Aby znaleźć samolot na niebie:   </Text>
         <Text style={styles.NormalText}>{"\n"}1. przejdz do następnego ekranu i wybierz numer lotu, który chcesz odnaleźć</Text>
-        <Text style={styles.NormalText}>{"\n"}2. kieruj telefonem zgodnie ze sztrzłkami wyświetlanymi na ekranie{"\n"} </Text>
+        <Text style={styles.NormalText}>{"\n"}2. trzymaj telefon na wprost w pozycji pionoiwej</Text>
+        <Text style={styles.NormalText}>{"\n"}3. kieruj telefonem zgodnie ze sztrzłkami wyświetlanymi na ekranie{"\n"} </Text>
         {SPLatitude!=null?(
         <TouchableOpacity
         onPress={() => navigation.navigate('Informacje', {SPLo: SPLongitude, SPLa: SPLatitude})}
