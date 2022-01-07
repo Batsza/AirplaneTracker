@@ -121,7 +121,7 @@ function CameraScrean(props) {
       let wys = planes.states[0][13] -SPAltitude ;
       let kat = Math.atan(wys/dis) * 180 / Math.PI;
 
-      setAngle(Math.round(kat));
+      setAngle(Math.round(kat)+5);
     const deltaLongitude =  planes.states[0][5] - SPLongitude ;
     const azimuthRad = Math.atan2(Math.sin(deltaLongitude)*Math.cos(planes.states[0][6]),
     (Math.cos(SPLatitude)*Math.sin(planes.states[0][6])-Math.sin(SPLatitude)*Math.cos(planes.states[0][6])*Math.cos(deltaLongitude)));
@@ -165,7 +165,6 @@ function CameraScrean(props) {
   }
   const renderUpDown=()=>{
     if(angle+3>roll&&angle-3<roll){
-      console.log("XD2");
       return (
         <Text style={styles.text}> 
               <Icon name="target" size={300} color="red" /> 

@@ -41,7 +41,6 @@ function WelcomeScreen({ route, navigation }) {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
-        console.log("zlexd");
         return;
       }
 
