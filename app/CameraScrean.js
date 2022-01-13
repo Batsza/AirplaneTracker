@@ -1,4 +1,4 @@
-import React, { useState, useEffect }from 'react';
+import  React, {  useState, useEffect }from 'react';
 import { Camera } from 'expo-camera';
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
@@ -42,6 +42,11 @@ function CameraScrean(props) {
   const [motioData, setMotionData] = useState({
     beta: 0,
   });
+  useEffect(() => {
+    _motion();
+    return () => {_unnotion();};
+  }, []);
+  
   const _motion = () => {
     DeviceMotion.setUpdateInterval(1000);    
     setMotion(
@@ -55,10 +60,6 @@ function CameraScrean(props) {
     setMotion(null);
   };
 
-  useEffect(() => {
-    _motion();
-    return () => _unnotion();
-  }, []);
   const {  beta } = motioData;
   const roll = Math.round(((beta * 180 / Math.PI) - 90)*(-1));// In degrees
 
@@ -125,7 +126,6 @@ function CameraScrean(props) {
     const deltaLongitude =  planes.states[0][5] - SPLongitude ;
     const azimuthRad = Math.atan2(Math.sin(deltaLongitude)*Math.cos(planes.states[0][6]),
     (Math.cos(SPLatitude)*Math.sin(planes.states[0][6])-Math.sin(SPLatitude)*Math.cos(planes.states[0][6])*Math.cos(deltaLongitude)));
-    //console.log(azimuthRad);
     const degr = azimuthRad * 180 / Math.PI;
     if(degr>0){
     setDegris(Math.round(degr));
@@ -143,16 +143,8 @@ function CameraScrean(props) {
   }, []);
  
   
-  const getCompassData = async () =>{
-    let kompas = await Location.getHeadingAsync();
-    setCompass(kompas.trueHeading);
-  }
   const compasR =  _degree(magnetometer) ;
   //const compasR =  Math.round(compass); ;
-    useEffect(() => {
-    setInterval(() => getCompassData(), (1000));
-    getCompassData();
-  }, []);
   useEffect(() => {
     // setInterval(() => getFlight(), (1000))
    getFlight();
@@ -214,114 +206,26 @@ function CameraScrean(props) {
           <Icon name="arrow-left" size={300} color="#00ff04" />
       </Text>
       );
-    }else if(compasR>=degris+5||compasR<=newdegri){
-      return (
-        <Text style={styles.text}> 
-          <Icon name="arrow-left" size={300} color="#00ff04" />
-      </Text>
-      );
-    }else if(compasR<=degris-5||compasR>newdegri){
-      return (
-        <Text style={styles.text}> 
-          <Icon name="arrow-right" size={300} color="#00ff04" />
-      </Text>
-      );
+    }else if(degris>=180){
+      if(compasR>=degris+5||compasR<=newdegri){
+        return (
+          <Text style={styles.text}> 
+            <Icon name="arrow-left" size={300} color="#00ff04" />
+        </Text>
+        );
+      }
+    }else if(degris<180){
+      if(compasR<=degris-5||compasR>newdegri){
+        return (
+          <Text style={styles.text}> 
+            <Icon name="arrow-right" size={300} color="#00ff04" />
+        </Text>
+        );
+      }
+
     }
 
 
-
-    /*if(degris+10>compasR&&degris-10<compasR&&angle+3>roll&&angle-3<roll){
-      return (
-        <Text style={styles.text}> 
-              <Icon name="target" size={300} color="red" /> 
-      </Text>
-      );
-    }else if(compasR<=degris-10&&compasR>newdegri&&angle+3>roll&&angle-3<roll){
-      return (
-        <Text style={styles.text}> 
-          <Icon name="arrow-right" size={300} color="#00ff04" />
-      </Text>
-      );
-    }else if(compasR>=degris+10&&compasR<=newdegri&&angle+3>roll&&angle-3<roll) {
-      return (
-        <Text style={styles.text}> 
-          <Icon name="arrow-left" size={300} color="#00ff04" />
-      </Text>
-      );
-    }else if(compasR>=degris+10&&angle+3>roll&&angle-3<roll||compasR<=newdegri&&angle+3>roll&&angle-3<roll){
-      return (
-        <Text style={styles.text}> 
-          <Icon name="arrow-left" size={300} color="#00ff04" />
-      </Text>
-      );
-    }else if(compasR<=degris-10&&angle+3>roll&&angle-3<roll||compasR>newdegri&&angle+3>roll&&angle-3<roll){
-      return (
-        <Text style={styles.text}> 
-          <Icon name="arrow-right" size={300} color="#00ff04" />
-      </Text>
-      );
-    }else if(degris+10>compasR&&degris-10<compasR&&angle-3>=roll){
-      return (
-        <Text style={styles.text}> 
-          <Icon name="arrow-up" size={300} color="#00ff04" />
-      </Text>
-      );
-    }
-    else if(degris+10>compasR&&degris-10<compasR&&angle+3<=roll){
-      return (
-        <Text style={styles.text}> 
-          <Icon name="arrow-down" size={300} color="#00ff04" />
-      </Text>
-      );
-    }else if(compasR<=degris-10&&compasR>newdegri&&angle-3>=roll){
-      return (
-        <Text style={styles.text}> 
-          <Icon name="arrow-up-right" size={300} color="#00ff04" />
-      </Text>
-      );
-    }else if(compasR>=degris+10&&compasR<=newdegri&&angle-3>=roll) {
-      return (
-        <Text style={styles.text}> 
-          <Icon name="arrow-up-left" size={300} color="#00ff04" />
-      </Text>
-      );
-    }else if(compasR>=degris+10&&angle-3>=roll||compasR<=newdegri&&angle-3>=roll){
-      return (
-        <Text style={styles.text}> 
-          <Icon name="arrow-up-left" size={300} color="#00ff04" />
-      </Text>
-      );
-    }else if(compasR<=degris-10&&angle-3>=roll||compasR>newdegri&&angle-3>=roll){
-      return (
-        <Text style={styles.text}> 
-          <Icon name="arrow-up-right" size={300} color="#00ff04" />
-      </Text>
-      );
-    }else if(compasR<=degris-10&&compasR>newdegri&&angle+3<=roll){
-      return (
-        <Text style={styles.text}> 
-          <Icon name="arrow-down-right" size={300} color="#00ff04" />
-      </Text>
-      );
-    }else if(compasR>=degris+10&&compasR<=newdegri&&angle+3<=roll) {
-      return (
-        <Text style={styles.text}> 
-          <Icon name="arrow-down-left" size={300} color="#00ff04" />
-      </Text>
-      );
-    }else if(compasR>=degris+10&&angle+3<=roll||compasR<=newdegri&&angle+3<=roll){
-      return (
-        <Text style={styles.text}> 
-          <Icon name="arrow-down-left" size={300} color="#00ff04" />
-      </Text>
-      );
-    }else if(compasR<=degris-10&&angle+3<=roll||compasR>newdegri&&angle+3<=roll){
-      return (
-        <Text style={styles.text}> 
-          <Icon name="arrow-down-right" size={300} color="#00ff04" />
-      </Text>
-      );
-    }*/
   }
 
   return (

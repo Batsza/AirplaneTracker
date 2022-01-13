@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, ImageBackground,  StyleSheet, View, Text, PermissionsAndroid, FlatList, RefreshControl,  ScrollView,TouchableOpacity} from 'react-native';
 import * as Location from 'expo-location';
-import Icon from 'react-native-vector-icons/Feather';
 import { LinearGradient } from 'expo-linear-gradient';
 
 
@@ -37,10 +36,10 @@ function InfoScreean({ route, navigation }) {
   const [SPLatitude, setSPLatitude] = useState(null);
   const [SPAltitude, setSPAltitude] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [SPLongitudeW1, setSPLongitudeW1] = useState(route.params.SPLo+1);
-  const [SPLongitudeM1, setSPLongitudeM1] = useState(route.params.SPLo-1);
-  const [SPLatitudeW1, setSPLatitudeW1] = useState(route.params.SPLa+0.5);
-  const [SPLatitudeM1, setSPLatitudeM1] = useState(route.params.SPLa-0.5);
+  const [SPLongitudeW, setSPLongitudeW] = useState(route.params.SPLo+1);
+  const [SPLongitudeM, setSPLongitudeM] = useState(route.params.SPLo-1);
+  const [SPLatitudeW, setSPLatitudeW] = useState(route.params.SPLa+0.5);
+  const [SPLatitudeM, setSPLatitudeM] = useState(route.params.SPLa-0.5);
   const [planeData, setplaneData] = useState([]);
 
 
@@ -57,16 +56,15 @@ function InfoScreean({ route, navigation }) {
       setSPLongitude(location.coords.longitude);
       setSPLatitude(location.coords.latitude);
       setSPAltitude(location.coords.altitude);
-      setSPLongitudeM1(location.coords.longitude-1);
-      setSPLongitudeW1(location.coords.longitude+1);
-      setSPLatitudeW1(location.coords.latitude+0.5);//+0.5?
-      setSPLatitudeM1(location.coords.latitude-0.5);
+      setSPLongitudeM(location.coords.longitude-1);
+      setSPLongitudeW(location.coords.longitude+1);
+      setSPLatitudeW(location.coords.latitude+0.5);//+0.5?
+      setSPLatitudeM(location.coords.latitude-0.5);
     })();
   }, []);
   const getFlight = async () => {
-
-    //const response = await fetch('https://opensky-network.org/api/states/all?lamin=50.1107&lomin=19.4215&lamax=51.2032&lomax=21.52108');
-    const response = await fetch('https://opensky-network.org/api/states/all?lamin='+SPLatitudeM1+'&lomin='+SPLongitudeM1+'&lamax='+SPLatitudeW1+'&lomax='+SPLongitudeW1);
+    //const response = await fetch('https://opensky-network.org/api/states/all?lamin=48.1107&lomin=17.4215&lamax=51.2032&lomax=21.52108');
+    const response = await fetch('https://opensky-network.org/api/states/all?lamin='+SPLatitudeM+'&lomin='+SPLongitudeM+'&lamax='+SPLatitudeW+'&lomax='+SPLongitudeW);
     const planes = await response.json();
     setplaneData(planes);
 }
@@ -122,11 +120,11 @@ function InfoScreean({ route, navigation }) {
                 <TouchableOpacity
                     onPress={() =>navigation.navigate('Namierz samolot', {PlanIco: item[0], SPLO: SPLongitude, SPLA: SPLatitude, SPA: SPAltitude})}
                 >
-                          <LinearGradient
-        // Background Linear Gradient
-        colors={['#ffc455', '#e08b00']}
-        style={styles.planeViewC}
-        > 
+                <LinearGradient
+                // Background Linear Gradient
+                colors={['#ffc455', '#e08b00']}
+                style={styles.planeViewC}
+                > 
                 <View  key={item.key}><Text style={styles.InViewText} >Numer lotu:  {item[1]}</Text><Text style={styles.InText}>Kraj lini lotniczych: {item[2]} </Text></View>
                   </LinearGradient>
                 </TouchableOpacity>
