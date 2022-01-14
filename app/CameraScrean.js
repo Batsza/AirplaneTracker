@@ -9,7 +9,6 @@ import { DeviceMotion, Magnetometer } from 'expo-sensors';
 function CameraScrean(props) {
   const [hasPermission, setHasPermission] = useState(null);
   const [planeData, setplaneData] = useState([]);
-  const [compass, setCompass] = useState(null);
   const [location, setLocation] = useState(null);
   const [SPLongitude, setSPLongitude] = useState(props.route.params.SPLO);
   const [SPLatitude, setSPLatitude] = useState(props.route.params.SPLA);
@@ -36,31 +35,31 @@ function CameraScrean(props) {
     })();
   }, []);
 
-  
-
-  const [motion, setMotion] = useState(null);
   const [motioData, setMotionData] = useState({
     beta: 0,
   });
+  const [motion, setMotion] = useState(null);
   useEffect(() => {
     _motion();
     return () => {_unnotion();};
   }, []);
-  
   const _motion = () => {
     DeviceMotion.setUpdateInterval(1000);    
     setMotion(
       DeviceMotion.addListener(orientation=> {
-        setMotionData(orientation.rotation);
+        if(typeof(orientation.rotation)!=="undefined"){
+        setMotionData(orientation.rotation);}
       })
     );
   };
   const _unnotion = () => {
     motion && motion.remove();
+    DeviceMotion.removeAllListeners();
     setMotion(null);
   };
 
-  const {  beta } = motioData;
+  const { beta } = motioData;
+  
   const roll = Math.round(((beta * 180 / Math.PI) - 90)*(-1));// In degrees
 
   
