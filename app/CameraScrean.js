@@ -27,7 +27,6 @@ function CameraScrean(props) {
 
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
-      //console.log(location);
       setSPLongitude(location.coords.longitude);
       setSPLatitude(location.coords.latitude);
       setSPAltitude(location.coords.altitude);
@@ -113,7 +112,6 @@ function CameraScrean(props) {
     const response = await fetch('https://opensky-network.org/api/states/all?icao24=' + props.route.params.PlanIco);
     const planes = await response.json();
     setplaneData(planes);
-    //console.log(planes);
     let dis = getDistance(
       {latitude: SPLatitude, longitude: SPLongitude},
       {latitude: planes.states[0][6], longitude: planes.states[0][5]},
@@ -143,9 +141,7 @@ function CameraScrean(props) {
  
   
   const compasR =  _degree(magnetometer) ;
-  //const compasR =  Math.round(compass); ;
   useEffect(() => {
-    // setInterval(() => getFlight(), (1000))
    getFlight();
 }, []);
   if (hasPermission === null) {

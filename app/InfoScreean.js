@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, ImageBackground,  StyleSheet, View, Text, PermissionsAndroid, FlatList, RefreshControl,  ScrollView,TouchableOpacity} from 'react-native';
+import { StyleSheet, View, Text, PermissionsAndroid,  RefreshControl,  ScrollView,TouchableOpacity} from 'react-native';
 import * as Location from 'expo-location';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -79,10 +79,7 @@ function InfoScreean({ route, navigation }) {
 
     
   useEffect(() => {
-       // setInterval(() => getFlight(), (1000))
-
       getFlight();
-    //console.log(planeData)
   }, []);
  
   const wait = (timeout) => {

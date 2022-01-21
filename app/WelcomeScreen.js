@@ -3,8 +3,6 @@ import { Button, ImageBackground,  StyleSheet, View, PermissionsAndroid, Text, T
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Location from 'expo-location';
 
-
-
 const requestLocationPermission = async () => {
   try {
     const granted = await PermissionsAndroid.request(
@@ -55,12 +53,10 @@ function WelcomeScreen({ route, navigation }) {
 
       <View 
       >
-            <LinearGradient
-        // Background Linear Gradient
-        colors={['#477fff', '#008ac7', '#2ba0d9']}
-        style={styles.background}
-
-      />
+        <LinearGradient
+          colors={['#477fff', '#008ac7', '#2ba0d9']}
+          style={styles.background}
+        />
         <View style={styles.Title}><Text style={styles.TitleText}>Witaj w aplikcji do odnajdywania samolotów na niebie</Text></View>
         <View style={styles.startWidok}> 
         <Text style={styles.NormalText}>{"\n"}Aby znaleźć samolot na niebie:   </Text>
@@ -68,36 +64,33 @@ function WelcomeScreen({ route, navigation }) {
         <Text style={styles.NormalText}>{"\n"}2. trzymaj telefon na wprost w pozycji pionoiwej</Text>
         <Text style={styles.NormalText}>{"\n"}3. kieruj telefonem zgodnie ze sztrzłkami wyświetlanymi na ekranie{"\n"} </Text>
         {SPLatitude!=null?(
-        <TouchableOpacity
-        onPress={() => navigation.navigate('Informacje', {SPLo: SPLongitude, SPLa: SPLatitude})}
-        >
-        <LinearGradient
-        // Background Linear Gradient
-        colors={['#ffc455', '#e08b00']}
-        style={styles.planeViewC}
-        >
-        <View style={styles.startButton}>
-        <Text style={styles.ButtonText}>Wybór samolotu </Text>
-        </View>
-        </LinearGradient>
-        </TouchableOpacity>):(   <TouchableOpacity 
-        disabled={true}
-        onPress={() => navigation.navigate('Informacje', {SPLo: SPLongitude, SPLa: SPLatitude})}
-        >
-        <LinearGradient
-        // Background Linear Gradient
-        colors={['#6e6e6e', '#6e6e6e']}
-        style={styles.planeViewC}
-        >
-        <View style={styles.startButton}>
-        <Text style={styles.ButtonText}>Wybór samolotu </Text>
-        </View>
-        </LinearGradient>
-        </TouchableOpacity>)}
-        
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Informacje', {SPLo: SPLongitude, SPLa: SPLatitude})}
+          >
+            <LinearGradient
+            colors={['#ffc455', '#e08b00']}
+            style={styles.planeViewC}
+            >
+              <View style={styles.startButton}>
+                <Text style={styles.ButtonText}>Wybór samolotu </Text>
+              </View>
+            </LinearGradient>
+            </TouchableOpacity>):(   
+          <TouchableOpacity 
+            disabled={true}
+            onPress={() => navigation.navigate('Informacje', {SPLo: SPLongitude, SPLa: SPLatitude})}
+          >
+            <LinearGradient
+              colors={['#6e6e6e', '#6e6e6e']}
+              style={styles.planeViewC}
+            >
+              <View style={styles.startButton}>
+                <Text style={styles.ButtonText}>Wybór samolotu </Text>
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>)}
         </View>
       </View>
-
   );
 }
 const styles = StyleSheet.create({
